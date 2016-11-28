@@ -2,38 +2,46 @@ package net.slipp.web;
 
 import java.util.ArrayList;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import net.slipp.model.Question;
+import net.slipp.model.QuestionRepository;
 
 @Controller
+@RequestMapping("/questions")
 public class QuestionController {
 
 	private ArrayList<Question> questions = new ArrayList<>();
 	
-	@GetMapping("/questions")
+	@Autowired
+	private QuestionRepository questionRepository;
+	
+	@GetMapping("/form")
+	public String form() {
+		return "/qna/form";
+	}
+	
+	@GetMapping("")
 	public String list(Model model) {
 		
-		for(Question question1 : questions) {
-			System.out.println("list qna : " + question1.toString());
-		}
-		model.addAttribute("questions", questions);
+		model.addAttribute("questions", questionRepository.findAll());
 		
 		return "/qna/show";
 	}
 	
 	
-	@PostMapping("/qna/create")
+	@PostMapping("")
 	public String create(Question question) {
 		
 		questions.add(question);
 		
-		for(Question question1 : questions) {
-			System.out.println("qna : " + question1.toString());
-		}
+		questionRepository.save(question);
+		
 		
 		return "redirect:/questions";
 	}
